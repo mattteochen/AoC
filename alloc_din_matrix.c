@@ -45,6 +45,8 @@ int main() {
 
     //liberare matrix
     free(matrix);
+    
+    //ciao
 
     return 0;
 }
