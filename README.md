@@ -1,1 +1,1 @@
-Personal projects, college codes, leetcodes...have fun
+Advent 2020 solutions
