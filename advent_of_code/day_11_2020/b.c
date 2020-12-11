@@ -49,9 +49,7 @@ int main(){
         for (i=0; i<c; i++){
             for (k=0; k<strlen(v[i]); k++){
                 if (vc[i][k] == 'L'){
-                    printf ("1\n");
                     countPositionsOccupied = getPosOccupied(v, i, k, c-1, strlen(v[i])-1);
-                    printf ("11\n");
                     if (countPositionsOccupied == 0){
                         vc[i][k] = '#';
                         flag = false;
@@ -149,7 +147,6 @@ int getPosOccupied(char **v, int row, int col, int maxR, int maxC){
             }
             r--;
         }
-        printf ("uc ok\n");
     }
     //middle left
     if (col-1 >= 0){
