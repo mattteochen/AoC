@@ -134,12 +134,6 @@ void binary(char *nToBin, int n){
             pos--;
         }
     }
-    /*
-    printf ("\n");
-    for (i=0; i<36; i++)
-        printf("%d", bin[i]);
-    printf ("\n");
-    */
     for (i=0; i<36; i++){
         nToBin[i] = bin[i]+'0';
     }
