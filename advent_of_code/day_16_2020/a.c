@@ -1,9 +1,3 @@
-//rules is char
-//rulesValues is int
-
-//tickes is char
-//tNumbers is int
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
