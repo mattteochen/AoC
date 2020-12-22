@@ -66,7 +66,6 @@ int main(){
     }
     fclose(f);
 
-    //in EXTREMES I put every top row or top_below row -- in extremes_bis I put the lef and right wing of every subImage
     char **EXTREMES = (char **)malloc(sizeof(char *)*(T_counter*2));
     char **EXTREMES_BIS = (char **)malloc(sizeof(char *)*(T_counter*2));
     char **NAME = (char **)malloc(sizeof(char *)*T_counter);
@@ -150,7 +149,6 @@ int main(){
     int RIS_ROW = 0, CONNECTIONS_C = 0; 
     char DIRECTION; 
 
-    //this check the top and the bottom
     for (int i=0; i<(2*T_counter); i++){
         RIS_ROW = control(EXTREMES, EXTREMES[i], 2*T_counter, &DIRECTION, i);
         if (RIS_ROW != -1 && RIS_ROW != i){
