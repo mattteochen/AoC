@@ -101,7 +101,6 @@ int main(){
 	}
 	printf ("\nend check\n\n");
 
-	//transsfer remained base reagents
 	//add_remain(created_excess_head, head);
 	c = head;
 	long re = 0;
@@ -200,7 +199,6 @@ void insert_list(O **head, int ore, int val, char add[]){
 			c = c->n;
 		c->n = new;
 	}
-	//printf ("insertion correct\n");
 }
 
 void ore_counter(char **list, int row, O **head){
@@ -210,13 +208,10 @@ void ore_counter(char **list, int row, O **head){
 	int c = 0;
 	int n1 = 0, n2 = 0;
 	for (int i=0; i<row; i++){
-		//printf ("analizing row: %d\n", i);
 		n1 = atoi(list[i]);
-		//printf ("n1: %d\n", n1);
 		for (int j=0; j<strlen(list[i])-3; j++){
 			fill_test(test, list[i], j, 3);
 			if (strcmp(test, o) == 0){
-				//printf ("T: %s\n", test);
 				int p = 0;
 				while (list[i][p] != '>')
 					p++;
@@ -233,14 +228,11 @@ void ore_counter(char **list, int row, O **head){
 					ic++;
 				}	
 				to_insert[ic] = '\0';
-				//printf ("to insert: %s, his value: %d\n", to_insert, n2);
 				insert_list(head, n1, n2, to_insert);
 				break;
 			}
-		}
-		//printf ("end inner for\n");	
+		}	
 	}
-	//printf ("ore ok\n");
 }
 
 void insert_created_excess(C **head, C **tail, char test[], int q){
@@ -360,7 +352,7 @@ int search_excess(E **head, char *test){
 }
 
 int count(int size, char **list, char *test, int row, O **head, E **excess_head, E **excess_tail){	
-	//hipotetically 20 is the max number of reagents
+	//hipotetically 20 is the max number of reagents for one reaction
 	
 	char **newlist = (char**)malloc(sizeof(char*)*20);
 	int *newq = (int*)malloc(sizeof(int)*20), res = 0;
@@ -403,7 +395,6 @@ int count(int size, char **list, char *test, int row, O **head, E **excess_head,
 	}
 
 	if (strcmp(newlist[0], "ORE") == 0){
-		//printf ("add1: %d\n", size);
 		add_value(size, test, head);
 		return 0;
 	}
@@ -423,11 +414,9 @@ int count(int size, char **list, char *test, int row, O **head, E **excess_head,
 }
 	
 void fill_fuel(int *quantity, char **f_list, char *fuel, int row, char **total, int *divisor){
-	printf ("tosearch: %s\n", fuel);
-	//printf ("fuel L: %lu\n", strlen(fuel));	
+	printf ("tosearch: %s\n", fuel);	
 	char *test = (char*)malloc(sizeof(char)*strlen(fuel)+1);
 	test[strlen(fuel)] = '\0';
-	//printf ("test L: %lu\n", strlen(test));
 	int fuel_row = -1;
 	for (int i=0; i<row; i++){
 		int p = 0;
@@ -436,16 +425,13 @@ void fill_fuel(int *quantity, char **f_list, char *fuel, int row, char **total, 
 		p += 2;
 		int n = atoi(&total[i][p]);
 		for (int k=p; k<strlen(total[i]); k++){
-			//printf ("K: %d\n", k);
 			fill_test(test, total[i], k, strlen(fuel));
-			//printf ("test: %s\n", test);
 			if (strcmp(test, fuel) == 0){
 				fuel_row = i;
 				*divisor = n;
 			}
 		}
 	}
-	//printf ("row: %d\n", fuel_row);
 	int qc = 0, lc = 0, i = 0;
 	printf ("this row: %s\n", total[fuel_row]);
 	while (i < strlen(total[fuel_row])){
@@ -471,18 +457,6 @@ void fill_fuel(int *quantity, char **f_list, char *fuel, int row, char **total, 
 		if (total[fuel_row][i] == '=')
 			break;
 	}
-	//printf ("OK\n");
-	//printf ("q:\n");
-	//for (int i=0; i<20; i++)
-		//printf ("%d ", quantity[i]);
-	//printf ("\n\n");
-	/*
-	for (int i=0; i<20; i++){
-		if (quantity[i] == -1)
-			break;
-		printf ("%s: %d\n", f_list[i], quantity[i]);
-	}
-	*/
 	free(test);
 }
 
