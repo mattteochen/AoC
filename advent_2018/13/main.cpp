@@ -1,238 +1,231 @@
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <string>
-#include <cmath>
-#include <sstream>
-#include <set>
-#include <map>
-#include <unordered_map>
-#include <stdio.h>
-#include <string>
-#include <stdlib.h>
-#include <list>
+#include <bits/stdc++.h>
 
-using namespace std;
+typedef vector<string> vs;
+typedef vector<int> vi;
+typedef string st;
+typedef pair<int,int> ii;
 
-#define DIM 500
-//pair for the x & y
-vector<vector<int> > carts;
-vector<int> cartPos;
+vector<pair<ii,int>> cartList;
+vs MAP;
+vs original;
+vs backupMAP;
+bool collision=false;
+ii ans;
 
-void moveIntersection(vector<string> &MAP, int x, int y, int code);
-void moveCart(vector<string> &MAP, int x, int y, bool &collision);
-void solveOne(vector<string> &MAP, int &x, int &y);
-inline bool isCart(char &c){
-	if (c == '^' || c == 'v' || c == '>' || c == '<') return true;
+bool isCart(char &c){
+	if (c=='v' || c=='^' || c=='<' || c=='>') return true;
 	return false;
 }
+int getMoveNumber(int i,int j, int *returnPosition);
+void move(char c, int i, int j);
+void solve();
+void putBackSlashes();
+void makeOrignalMap();
+void printMap();
+void controlEdges();
 
 int main(){
-	ifstream file("i.txt");
-	vector<string> MAP, defaultMap;
-	string s;
-	while (getline(file,s))
+	ifstream file("ii.txt");
+	if (!file){
+		cout << "file err\n";
+		return -1;
+	}
+	st s;
+	//read map
+	while (getline(file,s)) 
 		MAP.push_back(s);
-	int pos = 0;
-	for (int j=0;j<MAP.size();j++){
-		for (int i=0;i<MAP[j].length();i++){
-			 if (isCart(MAP[j][i])){
-				carts[j].push_back(j);
-				carts[j].push_back(i);
-				carts[j].push_back(0); //this state indicate if the cart is on a intersection
-				carts[j].push_back(1);
-				cartPos.push_back(pos);
-				pos++;
-			 }
+	//save carts positions
+	//controlEdges();
+	int id=1;
+	for (int i=0;i<MAP.size();i++){
+		for (int j=0;j<MAP[i].size();j++){
+			if (isCart(MAP[i][j])){
+				cartList.push_back({{i,j},1});
+				id++;
+			}
 		}
 	}
-	for (auto &a : MAP) defaultMap.push_back(a);
-
-	//for (int i=0;i<carts.size();i++) whichMove.push_back(1);
-	int x, y;
-	solveOne(MAP,x,y);
-
-
+	/*
+	for (auto &a  : cartList){
+		cout << a.first.first << " " << a.first.second << endl;
+	}	
+	*/
+	solve();
+	cout << "part one: " << ans.second << "," << ans.first << endl;	
 
 	return 0;
-}
+}	
 
-void moveIntersection(vector<string> &MAP, int x, int y, int code){
-	switch(MAP[x][y]){
-		case '^':
-			if (code == 1){
-				MAP[x][y-1] = '<';
-				MAP[x][y] = '+';
-			}
-			else if (code == 2){
-				MAP[x-1][y] = '^';
-				MAP[x][y] = '+';
-			}
-			else if (code == 3){
-				MAP[x][y+1] = '>';
-				MAP[x][y] = '+';
-			}
-			break;
-		case 'v':
-			if (code == 1){
-				MAP[x][y+1] = '>';
-				MAP[x][y] = '+';
-			}
-			else if (code == 2){
-				MAP[x+1][y] = 'v';
-				MAP[x][y] = '+';
-			}
-			else if (code == 3){
-				MAP[x][y-1] = '<';
-				MAP[x][y] = '+';
-			}
-			break;
-		case '>':
-			if (code == 1){
-				MAP[x-1][y] = '^';
-				MAP[x][y] = '+';
-			}
-			else if (code == 2){
-				MAP[x][y+1] = '>';
-				MAP[x][y] = '+';
-			}
-			else if (code == 3){
-				MAP[x+1][y] = 'v';
-				MAP[x][y] = '+';
-			}
-			break;
+void controlEdges(){
+	for (int i=0;i<MAP.size();i++){
+		for (int j=0;j<MAP[i].size();j++){
+			if (isCart(MAP[i][j])){
+				if (i-1>=0) cout << " " <<  MAP[i-1][j] << endl;
+				if (j-1>=0) cout << MAP[i][j-1] << " ";
+				if (j+1<MAP[i].size()) cout << MAP[i][j+1] << endl;
+				if (i+1<MAP.size()) cout << " " << MAP[i+1][j] << endl;
+				cout << "\n\n";
+			}	
+		}
 	}
 }
+				
 
-void moveCart(vector<string> &MAP, int x, int y, bool &collision){
-	char t = MAP[x][y];
-	vector<vector<int> >::iterator it = carts.begin();
-	for (auto &a : carts){
-		if (a[0] == x && a[1] == y) break;
-		it++;
+int getMoveNumber(int i,int j, int *returnPosition){
+	for (int k=0;k<cartList.size();k++){
+		if (cartList[k].first.first==i && cartList[k].first.second==j){
+			*returnPosition=k;
+			//cout << "good return\n";
+			return cartList[k].second;
+
+		}
 	}
-	switch(t){
-		case '^':
-			if (x-1 >= 0){
-				if ((*it)[2] == 1){
-					(*it)[2] = 0;
-					moveIntersection(MAP,x,y,(*it)[3]);
-					(*it)[3]++;
-					if ((*it)[3] == 4) (*it)[3] = 0;	
-				}	
-				else if (MAP[x-1][y] == '|'){
-					MAP[x-1][y] = '^';
-					MAP[x][y] = '|';
-				}
-				else if (MAP[x-1][y] == '/'){
-					MAP[x-1][y] = '>';
-					MAP[x][y] = '|';
-				}
-				else if (MAP[x-1][y] == 92){
-					MAP[x-1][y] = '<';
-					MAP[x][y] = '|';
-				}
-				else if (MAP[x-1][y] == '+'){
-					(*it)[2] = 1;
-					MAP[x-1][y] = '^';
-					MAP[x][y] = '|';
-				}
-				(*it)[0] = x-1;
-				(*it)[1] = y;
-			}
-			break;
-		case 'v':
-			if (x+1 < MAP.size()){
-				if ((*it)[2] == 1){
-					(*it)[2] = 0;
-					moveIntersection(MAP,x,y,(*it)[3]);
-					(*it)[3]++;
-					if ((*it)[3] == 4) (*it)[3] = 0;	
-				}
-				else if (MAP[x+1][y] == '|'){
-					MAP[x+1][y] = 'v';
-					MAP[x][y] = '|';
-				}
-				else if (MAP[x+1][y] == '/'){
-					MAP[x+1][y] = '<';
-					MAP[x][y] = '|';
-				}
-				else if (MAP[x+1][y] == 92){
-					MAP[x+1][y] = '>';
-					MAP[x][y] = '|';
-				}
-				(*it)[0] = x+1;
-				(*it)[1] = y;
-			}
-			break;
-		case '>':
-			if (y+1 < MAP[0].length() && MAP[x][y+1] != ' '){
-				if ((*it)[2] == 1){
-					(*it)[2] = 0;
-					moveIntersection(MAP,x,y,(*it)[3]);
-					(*it)[3]++;
-					if ((*it)[3] == 4) (*it)[3] = 0;	
-				}
-				else if (MAP[x][y+1] == '-'){
-					MAP[x][y+1] = '>';
-					MAP[x][y] = '-';
-				}
-				else if (MAP[x][y+1] == '/'){
-					MAP[x][y+1] = '^';
-					MAP[x][y] = '-';
-				}
-				else if (MAP[x][y+1] == 92){
-					MAP[x][y+1] = 'v';
-					MAP[x][y] = '-';
-				}
-				(*it)[0] = x;
-				(*it)[1] = y+1;
-			}
-			break;
-		case '<':
-			if (y-1 >= 0 && MAP[x][y-1] != ' '){
-				if ((*it)[2] == 1){
-					(*it)[2] = 0;
-					moveIntersection(MAP,x,y,(*it)[3]);
-					(*it)[3]++;
-					if ((*it)[3] == 4) (*it)[3] = 0;	
-				}
-				else if (MAP[x][y-1] == '-'){
-					MAP[x][y-1] = '<';
-					MAP[x][y] = '-';
-				}
-				else if (MAP[x][y-1] == '/'){
-					MAP[x][y-1] = 'v';
-					MAP[x][y] = '-';
-				}
-				else if (MAP[x][y-1] == 92){
-					MAP[x][y-1] = '^';
-					MAP[x][y] = '-';
-				}
-				(*it)[0] = x;
-				(*it)[1] = y-1;
-			}
-			break;
-	}
+	cout << "error func getMoveNumber\n";	
+	return -1;
 }
 
-void solveOne(vector<string> &MAP, int &x, int &y){
-	bool collision=false;
-	while (true){
+void move(char c, int i, int j){
+	int positionToChangeCoordinates=-1;
+	int moveNumber=getMoveNumber(i,j,&positionToChangeCoordinates);
+	//cout << positionToChangeCoordinates << endl;
+	if (c=='^'){
+		if (isCart(MAP[i-1][j])){
+			ans.first=i-1; ans.second=j;
+			collision=true;
+		}
+		if (MAP[i-1][j]=='|'){
+			MAP[i-1][j]='^'; MAP[i][j]='|';
+		}
+		else if (MAP[i-1][j]=='/'){
+			MAP[i-1][j]='>'; MAP[i][j]='|';
+		}
+		else if (MAP[i-1][j]==92){
+			MAP[i-1][j]='<'; MAP[i][j]='|';
+		}
+		else if (MAP[i-1][j]=='+'){
+			if (moveNumber==1){ MAP[i-1][j]='<'; MAP[i][j]='|';}
+			else if (moveNumber==2) {MAP[i-1][j]='^'; MAP[i][j]='|';}
+			else if (moveNumber==3) {MAP[i-1][j]='>'; MAP[i][j]='|';}
+			cartList[positionToChangeCoordinates].second++;
+			if (cartList[positionToChangeCoordinates].second==4)
+				cartList[positionToChangeCoordinates].second=1;	
+		}
+		cartList[positionToChangeCoordinates].first.first=i-1;
+	}
+	else if (c=='v'){
+		if (isCart(MAP[i+1][j])){
+			ans.first=i+1; ans.second=j;
+			collision=true;
+		}
+		if (MAP[i+1][j]=='|'){
+			MAP[i+1][j]='v'; MAP[i][j]='|';
+		}
+		else if (MAP[i+1][j]=='/'){
+			MAP[i+1][j]='<'; MAP[i][j]='|';
+		}
+		else if (MAP[i+1][j]==92){
+			MAP[i+1][j]='>'; MAP[i][j]='|';
+		}
+		else if (MAP[i+1][j]=='+'){
+			if (moveNumber==1){ MAP[i+1][j]='>'; MAP[i][j]='|';}
+			else if (moveNumber==2) {MAP[i+1][j]='v'; MAP[i][j]='|';}
+			else if (moveNumber==3) {MAP[i+1][j]='<'; MAP[i][j]='|';}
+			cartList[positionToChangeCoordinates].second++;
+			if (cartList[positionToChangeCoordinates].second==4)
+				cartList[positionToChangeCoordinates].second=1;	
+		}
+		cartList[positionToChangeCoordinates].first.first=i+1;
+	}
+	else if (c=='>'){
+		if (isCart(MAP[i][j+1])){
+			ans.first=i; ans.second=j+1;
+			collision=true;
+		}
+		if (MAP[i][j+1]=='-'){
+			MAP[i][j+1]='>'; MAP[i][j]='-';
+		}
+		else if (MAP[i][j+1]=='/'){
+			MAP[i][j+1]='^'; MAP[i][j]='-';
+		}
+		else if (MAP[i][j+1]==92){
+			MAP[i][j+1]='v'; MAP[i][j]='-';
+		}
+		else if (MAP[i][j+1]=='+'){
+			if (moveNumber==1){ MAP[i][j+1]='^'; MAP[i][j]='-';}
+			else if (moveNumber==2) {MAP[i][j+1]='>'; MAP[i][j]='-';}
+			else if (moveNumber==3) {MAP[i][j+1]='v'; MAP[i][j]='-';}
+			cartList[positionToChangeCoordinates].second++;
+			if (cartList[positionToChangeCoordinates].second==4)
+				cartList[positionToChangeCoordinates].second=1;	
+		}
+		cartList[positionToChangeCoordinates].first.second=j+1;
+	}
+	else if (c=='<'){
+		if (isCart(MAP[i][j-1])){
+			ans.first=i; ans.second=j-1;
+			collision=true;
+		}
+		if (MAP[i][j-1]=='-'){
+			MAP[i][j-1]='<'; MAP[i][j]='-';
+		}
+		else if (MAP[i][j-1]=='/'){
+			MAP[i][j-1]='v'; MAP[i][j]='-';
+		}
+		else if (MAP[i][j-1]==92){
+			MAP[i][j-1]='^'; MAP[i][j]='-';
+		}
+		else if (MAP[i][j-1]=='+'){
+			if (moveNumber==1){ MAP[i][j-1]='v'; MAP[i][j]='-';}
+			else if (moveNumber==2) {MAP[i][j-1]='<'; MAP[i][j]='-';}
+			else if (moveNumber==3) {MAP[i][j-1]='^'; MAP[i][j]='-';}
+			cartList[positionToChangeCoordinates].second++;
+			if (cartList[positionToChangeCoordinates].second==4)
+				cartList[positionToChangeCoordinates].second=1;	
+
+		}
+		cartList[positionToChangeCoordinates].first.second=j-1;
+	}	
+}
+
+void solve(){
+	backupMAP=MAP;
+	original=MAP;
+	makeOrignalMap();
+	while (!collision){	
 		for (int i=0;i<MAP.size();i++){
-			int j=0;
-			for (j=0;j<MAP[i].length();j++){
-				if (isCart(MAP[i][j])){
-					moveCart(MAP,i,j,collision);
-					//replace the '\' '/'
+			for (int j=0;j<MAP[i].size();j++){
+				if (isCart(backupMAP[i][j])){
+					move(backupMAP[i][j],i,j);
+					putBackSlashes();
+					if (collision) break;
 				}
 			}
-			if (collision){
-				x = i;
-				y = j;
-				return;
+			if (collision) break;
+		}
+		backupMAP=MAP;
+	}
+	//printMap();
+}
+
+void printMap(){
+	for (auto &a : backupMAP) cout << a << endl;
+}
+
+void makeOrignalMap(){
+	for (int i=0;i<MAP.size();i++){
+		for (int j=0;j<MAP[i].size();j++){
+			if (isCart(original[i][j])){
+				if (original[i][j]=='^' || original[i][j]=='v') original[i][j]='|';
+				else if (original[i][j]=='>' || original[i][j]=='<') original[i][j]='-';
 			}
 		}
 	}
 }
 
+void putBackSlashes(){
+	for (int i=0;i<MAP.size();i++){
+		for (int j=0;j<MAP[i].size();j++){
+			if (!isCart(MAP[i][j]) && MAP[i][j]!=original[i][j]) MAP[i][j]=original[i][j];
+		}
+	}
+}
