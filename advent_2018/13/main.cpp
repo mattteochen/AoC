@@ -9,8 +9,11 @@ vector<pair<ii,int>> cartList;
 vs MAP;
 vs original;
 vs backupMAP;
-bool collision=false;
 ii ans;
+int totalCart=0;
+bool firstCollision=true;
+vector<pair<ii,char>> slashes;
+vector<pair<ii,char>> changeDirection;
 
 bool isCart(char &c){
 	if (c=='v' || c=='^' || c=='<' || c=='>') return true;
@@ -23,6 +26,8 @@ void putBackSlashes();
 void makeOrignalMap();
 void printMap();
 void controlEdges();
+void partOne(int i, int j);
+void partTwo();
 
 int main(){
 	ifstream file("ii.txt");
@@ -35,7 +40,6 @@ int main(){
 	while (getline(file,s)) 
 		MAP.push_back(s);
 	//save carts positions
-	//controlEdges();
 	int id=1;
 	for (int i=0;i<MAP.size();i++){
 		for (int j=0;j<MAP[i].size();j++){
@@ -45,31 +49,22 @@ int main(){
 			}
 		}
 	}
+	for (int i=0;i<MAP.size();i++){
+		for (int j=0;j<MAP[i].size();j++){
+			if (MAP[i][j]=='/' || MAP[i][j]==92) slashes.push_back({{i,j},MAP[i][j]});
+			if (MAP[i][j]=='+') changeDirection.push_back({{i,j},'+'});
+		}
+	}
+	totalCart=cartList.size();
 	/*
 	for (auto &a  : cartList){
 		cout << a.first.first << " " << a.first.second << endl;
 	}	
 	*/
 	solve();
-	cout << "part one: " << ans.second << "," << ans.first << endl;	
-
+	
 	return 0;
 }	
-
-void controlEdges(){
-	for (int i=0;i<MAP.size();i++){
-		for (int j=0;j<MAP[i].size();j++){
-			if (isCart(MAP[i][j])){
-				if (i-1>=0) cout << " " <<  MAP[i-1][j] << endl;
-				if (j-1>=0) cout << MAP[i][j-1] << " ";
-				if (j+1<MAP[i].size()) cout << MAP[i][j+1] << endl;
-				if (i+1<MAP.size()) cout << " " << MAP[i+1][j] << endl;
-				cout << "\n\n";
-			}	
-		}
-	}
-}
-				
 
 int getMoveNumber(int i,int j, int *returnPosition){
 	for (int k=0;k<cartList.size();k++){
@@ -84,16 +79,28 @@ int getMoveNumber(int i,int j, int *returnPosition){
 	return -1;
 }
 
+void partOne(int i, int j){
+	ans.first=i; ans.second=j;
+	firstCollision=false;
+	cout << "part one: " << ans.second << "," << ans.first << endl; 
+}
+
 void move(char c, int i, int j){
 	int positionToChangeCoordinates=-1;
 	int moveNumber=getMoveNumber(i,j,&positionToChangeCoordinates);
 	//cout << positionToChangeCoordinates << endl;
+	bool changePosition=true;
 	if (c=='^'){
 		if (isCart(MAP[i-1][j])){
-			ans.first=i-1; ans.second=j;
-			collision=true;
+			if (firstCollision) partOne(i-1,j);
+			totalCart-=2;
+			MAP[i-1][j]='|'; MAP[i][j]='|';
+			cartList.erase(cartList.begin()+positionToChangeCoordinates);
+			int secondDelete=getMoveNumber(i-1,j,&positionToChangeCoordinates);
+			cartList.erase(cartList.begin()+positionToChangeCoordinates);
+			changePosition=false;
 		}
-		if (MAP[i-1][j]=='|'){
+		else if (MAP[i-1][j]=='|'){
 			MAP[i-1][j]='^'; MAP[i][j]='|';
 		}
 		else if (MAP[i-1][j]=='/'){
@@ -110,14 +117,20 @@ void move(char c, int i, int j){
 			if (cartList[positionToChangeCoordinates].second==4)
 				cartList[positionToChangeCoordinates].second=1;	
 		}
-		cartList[positionToChangeCoordinates].first.first=i-1;
+		if (changePosition)
+			cartList[positionToChangeCoordinates].first.first=i-1;
 	}
 	else if (c=='v'){
 		if (isCart(MAP[i+1][j])){
-			ans.first=i+1; ans.second=j;
-			collision=true;
-		}
-		if (MAP[i+1][j]=='|'){
+			if (firstCollision) partOne(i+1,j);
+			totalCart-=2;
+			MAP[i+1][j]='|'; MAP[i][j]='|'; backupMAP[i+1][j]='|';
+			cartList.erase(cartList.begin()+positionToChangeCoordinates);
+			int secondDelete=getMoveNumber(i+1,j,&positionToChangeCoordinates);
+			cartList.erase(cartList.begin()+positionToChangeCoordinates);
+			changePosition=false;
+		}	
+		else if (MAP[i+1][j]=='|'){
 			MAP[i+1][j]='v'; MAP[i][j]='|';
 		}
 		else if (MAP[i+1][j]=='/'){
@@ -134,14 +147,21 @@ void move(char c, int i, int j){
 			if (cartList[positionToChangeCoordinates].second==4)
 				cartList[positionToChangeCoordinates].second=1;	
 		}
-		cartList[positionToChangeCoordinates].first.first=i+1;
+		if (changePosition)
+			cartList[positionToChangeCoordinates].first.first=i+1;
 	}
 	else if (c=='>'){
+		
 		if (isCart(MAP[i][j+1])){
-			ans.first=i; ans.second=j+1;
-			collision=true;
+			if (firstCollision) partOne(i,j+1);	
+			totalCart-=2;
+			MAP[i][j+1]='-'; MAP[i][j]='-'; backupMAP[i][j+1]='-';
+			cartList.erase(cartList.begin()+positionToChangeCoordinates);
+			int secondDelete=getMoveNumber(i,j+1,&positionToChangeCoordinates);
+			cartList.erase(cartList.begin()+positionToChangeCoordinates);
+			changePosition=false;
 		}
-		if (MAP[i][j+1]=='-'){
+		else if (MAP[i][j+1]=='-'){
 			MAP[i][j+1]='>'; MAP[i][j]='-';
 		}
 		else if (MAP[i][j+1]=='/'){
@@ -158,14 +178,20 @@ void move(char c, int i, int j){
 			if (cartList[positionToChangeCoordinates].second==4)
 				cartList[positionToChangeCoordinates].second=1;	
 		}
-		cartList[positionToChangeCoordinates].first.second=j+1;
+		if (changePosition)
+			cartList[positionToChangeCoordinates].first.second=j+1;
 	}
 	else if (c=='<'){
 		if (isCart(MAP[i][j-1])){
-			ans.first=i; ans.second=j-1;
-			collision=true;
+			if (firstCollision) partOne(i,j-1);		
+			totalCart-=2;
+			MAP[i][j-1]='-'; MAP[i][j]='-';
+			cartList.erase(cartList.begin()+positionToChangeCoordinates);
+			int secondDelete=getMoveNumber(i,j-1,&positionToChangeCoordinates);
+			cartList.erase(cartList.begin()+positionToChangeCoordinates);
+			changePosition=false;
 		}
-		if (MAP[i][j-1]=='-'){
+		else if (MAP[i][j-1]=='-'){
 			MAP[i][j-1]='<'; MAP[i][j]='-';
 		}
 		else if (MAP[i][j-1]=='/'){
@@ -183,32 +209,36 @@ void move(char c, int i, int j){
 				cartList[positionToChangeCoordinates].second=1;	
 
 		}
-		cartList[positionToChangeCoordinates].first.second=j-1;
+		if (changePosition)
+			cartList[positionToChangeCoordinates].first.second=j-1;
 	}	
 }
 
+void partTwo(){
+	cout << "part two: " << cartList[0].first.second << "," << cartList[0].first.first << endl;
+}
 void solve(){
 	backupMAP=MAP;
 	original=MAP;
 	makeOrignalMap();
-	while (!collision){	
+	//printMap();
+	while (totalCart!=1){	
+		//printMap();
 		for (int i=0;i<MAP.size();i++){
 			for (int j=0;j<MAP[i].size();j++){
 				if (isCart(backupMAP[i][j])){
 					move(backupMAP[i][j],i,j);
 					putBackSlashes();
-					if (collision) break;
 				}
 			}
-			if (collision) break;
 		}
+		if (totalCart==1 )partTwo();
 		backupMAP=MAP;
 	}
-	//printMap();
 }
 
 void printMap(){
-	for (auto &a : backupMAP) cout << a << endl;
+	for (auto &a : MAP) cout << a << endl;
 }
 
 void makeOrignalMap(){
@@ -223,9 +253,10 @@ void makeOrignalMap(){
 }
 
 void putBackSlashes(){
-	for (int i=0;i<MAP.size();i++){
-		for (int j=0;j<MAP[i].size();j++){
-			if (!isCart(MAP[i][j]) && MAP[i][j]!=original[i][j]) MAP[i][j]=original[i][j];
-		}
+	for (auto &a : slashes){
+		if (!isCart(MAP[a.first.first][a.first.second])) MAP[a.first.first][a.first.second]=a.second;
+	}
+	for (auto &a : changeDirection){
+		if (!isCart(MAP[a.first.first][a.first.second])) MAP[a.first.first][a.first.second]=a.second;
 	}
 }
