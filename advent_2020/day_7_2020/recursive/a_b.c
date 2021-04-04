@@ -40,7 +40,6 @@ int main(){
 		fgets(list[i], dim, f);
 	}
 	fclose(f);
-
 	for (int i=0; i<row; i++)
 		res += get_bags(list, list[i], gold, row, counted, string_gold);	
 
@@ -51,7 +50,6 @@ int main(){
 
 	res = n(string_gold, list);
 	printf ("total bags: %d\n", res);
-
 	return 0;
 }
 

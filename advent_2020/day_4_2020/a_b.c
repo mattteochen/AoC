@@ -17,8 +17,8 @@ int Hair(char *S, int p1);
 int Eye(char *S, int p1);
 int PassID(char *S, int p1);
 
-int main(){
-    FILE *f = fopen ("passports.txt", "r");
+int main(int argc, char **argv){
+    FILE *f = fopen ("i.txt", "r");
     char letter;
     int counter = 0, bigC = 0, i = 0, Pc = 0, position = 0, check, field;
 
@@ -32,7 +32,7 @@ int main(){
         counter++;
     }
     fclose(f);
-    f = fopen ("passports.txt", "r");
+    f = fopen ("i.txt", "r");
 
     char *S = (char *)malloc(counter*sizeof(char));
     while (feof(f) != 1){

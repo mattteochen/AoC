@@ -11,15 +11,13 @@ void copyColour (char *destination, char *s, int size);
 int colorSize (char *s);
 
 int main (){
-    FILE *f = fopen ("bags.txt", "r");
+    FILE *f = fopen ("input.txt", "r");
     char l[256];
     int c = 0, k = 0;
-
     if (f == NULL){
         printf ("error file\n");
         return 0;
     }
-
     while (feof (f) != 1){
         fgets (l, 256, f);
         //printf ("%s\n", l);
@@ -27,26 +25,27 @@ int main (){
     }
     fclose (f);
     printf ("\nTotal: %d\n", c);
-    f = fopen ("bags.txt", "r");
+    f = fopen ("input.txt", "r");
     char **v = (char **)malloc(c*sizeof(char *));
     for (int i=0; i<c; i++){
         v[i] = (char *)malloc(256*sizeof(char));
         fgets (v[i], 256, f);
         //printf ("%s", v[i]);
     }
+    
     //because the last string has not the \n;
     v[c-1][strlen (v[c-1])] = '\n';
     printf ("\n");
     fclose (f);
 
     char gold[30] = "shiny gold";
-
     for (int i=0; i<c; i++){
         if (checkGold (v[i], gold) == true){
             k++;
         }
     }
     printf ("\ncount: %d\n\n", k);
+
     //now we must check the strings that cointain the colours that contains shiny gold
     char *colour;
     int size, beforeK = 0;

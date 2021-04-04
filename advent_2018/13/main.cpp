@@ -253,10 +253,10 @@ void makeOrignalMap(){
 }
 
 void putBackSlashes(){
-	for (auto &a : slashes){
+	for (auto &a : slashes){ //put back slashes
 		if (!isCart(MAP[a.first.first][a.first.second])) MAP[a.first.first][a.first.second]=a.second;
 	}
-	for (auto &a : changeDirection){
+	for (auto &a : changeDirection){ //put back '+'
 		if (!isCart(MAP[a.first.first][a.first.second])) MAP[a.first.first][a.first.second]=a.second;
 	}
 }
