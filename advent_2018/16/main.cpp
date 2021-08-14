@@ -31,8 +31,9 @@ bool eqir(Test &t);
 bool eqri(Test &t);
 bool eqrr(Test &t);
 void parse(vi &tmp, int code, string &s);
-void solve(Test &t, int *ans, vector<vi> &goodOpcodes);
+void solve(Test &t, int *ans, vector<vi> &goodOpcodes, map<int,vector<int>> &opcodeToFunc);
 void reverseBianryVector(vector<int> &v);
+void print(map<int,set<int>> &opcodeToFuncSet);
 
 int main(){
 	ifstream file("i.txt");
@@ -60,17 +61,48 @@ int main(){
 	//for (Test &t : all) t.print();
 	
 	vector<vi> goodOpcodes;
+	map<int,vector<int>> opcodeToFunc; //store 4 eve opcode which func is compatible so retrace back...
+
 	//part one
-	for (auto &a : all) solve(a,&ans,goodOpcodes);
+	for (auto &a : all) solve(a,&ans,goodOpcodes,opcodeToFunc);
 	cout << "part one: " << ans << endl;
 
-	/*	
-	sort(goodOpcodes.begin(),goodOpcodes.end(),[](vi &a, vi &b){return a[0]<b[0];});
-	for (int i=0;i<goodOpcodes.size();i++){
-		for (auto &a : goodOpcodes[i]) cout << a << " ";
-		cout << endl;
+	//print map
+	/*
+	for (auto &a : opcodeToFunc){
+		cout << a.first << endl;
+		for (auto &b : a.second) cout << b << " ";
+		cout << endl << endl;
 	}
 	*/
+
+	//create a set
+	map<int,set<int>> opcodeToFuncSet;
+	for (auto &a : opcodeToFunc){
+		for (auto &b : a.second){
+			opcodeToFuncSet[a.first].insert(b);
+		} 
+	}	
+	print(opcodeToFuncSet);
+
+	//test deletoe
+	int counter=0;
+	while (counter<1000){
+		counter++;
+		for (auto &a : opcodeToFuncSet){
+			if (a.second.size()==1){
+				for (auto &aa : opcodeToFuncSet){
+					if (aa.second.size()>1){
+						set<int>::iterator i=a.second.begin();
+						set<int>::iterator I=aa.second.find(*i);
+						if (I!=aa.second.end()) aa.second.erase(*i);
+					}
+				}
+			}
+		}
+	}
+	cout << "\n\n";
+	print(opcodeToFuncSet);
 
 	//part two
 	vi initial(4,0);
@@ -78,28 +110,49 @@ int main(){
 	return 0;
 }
 
-void solve(Test &t, int *ans, vector<vi> &goodOpcodes){
-	int k=0;
-	if (addr(t)) k++;
-	if (addi(t)) k++;
-	if (mulr(t)) k++;
-	if (muli(t)) k++;
-	if (banr(t)) k++;
-	if (bani(t)) k++;
-	if (borr(t)) k++;
-	if (bori(t)) k++;
-	if (setr(t)) k++;
-	if (seti(t)) k++;
-	if (gtri(t)) k++;
-	if (gtri(t)) k++;
-	if (gtrr(t)) k++;
-	if (eqri(t)) k++;
-	if (eqir(t)) k++;
-	if (eqrr(t)) k++;
-	//cout << k << endl;	
-	if (k>=3){ 
-		(*ans)++;
+void print(map<int,set<int>> &opcodeToFuncSet){ 
+	for (auto &a : opcodeToFuncSet){
+		cout << a.first << endl;
+		for (auto &b : a.second) cout << b << " ";
+		cout << endl << endl;
 	}
+}
+
+void solve(Test &t, int *ans, vector<vi> &goodOpcodes, map<int,vector<int>> &opcodeToFunc) {
+	int k=0, func=1; //func is the number of the function
+	if (addr(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (addi(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (mulr(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (muli(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (banr(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (bani(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (borr(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (bori(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (setr(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (seti(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (gtri(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (gtri(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (gtrr(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (eqri(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (eqir(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	func++;
+	if (eqrr(t)) {k++; opcodeToFunc[t.cases[1][0]].push_back(func);}
+	//cout << k << endl;	
+	if (k>=3) (*ans)++;
 }
 
 void parse(vi &tmp, int code, string &s){
@@ -345,10 +398,4 @@ bool eqrr(Test &t){
 	if (test==t.cases[2]) return true;
 	return false;
 }
-
-
-
-
-
-
 
