@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#define DEBUG
+//#define DEBUG
 
 using namespace std;
 
@@ -18,7 +18,9 @@ typedef map<int, string> M_IS;
 M_VVI Map;
 M_IS Res;
 vector<str> Test;
+int ans = 0;
 
+void solve();
 void get_num(str &line, int *index, str &tmp);
 void parse(str &line);
 bool number(char c);
@@ -54,7 +56,24 @@ int main()
 		cout << endl;
 	}
 #endif
+	solve();
+	cout << "part one: " << ans << endl;
+
 	return 0;
+}
+
+void solve()
+{
+	VVI Zero = Map[0];
+
+#ifdef DEBUG
+	cout << "Zero row values: \n";
+	for (auto &vector : Zero)
+	{
+		for (auto &n : vector) cout << n << endl;
+	}
+#endif
+	
 }
 
 bool number(char c)
