@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 //#define DEBUG
 
@@ -24,6 +25,8 @@ void solve();
 void get_num(str &line, int *index, str &tmp);
 void parse(str &line);
 bool number(char c);
+void dfs(str &building_string, vector<int> &Row, int index);
+bool is_in_Res(int &n);
 
 int main()
 {
@@ -65,6 +68,7 @@ int main()
 void solve()
 {
 	VVI Zero = Map[0];
+	str building_string = "";
 
 #ifdef DEBUG
 	cout << "Zero row values: \n";
@@ -73,7 +77,61 @@ void solve()
 		for (auto &n : vector) cout << n << endl;
 	}
 #endif
-	
+	dfs(building_string, Zero[0], 0);
+}
+
+void dfs(str &building_string, vector<int> &Row, int index)
+{
+	/*
+	if (building_string.length() == 6)
+	{
+		cout << "y\n";
+		auto it = find(Test.begin(), Test.end(), building_string); 
+		if (it != Test.end()) ans++;
+		return;
+	}
+	*/
+	for (int i = 0; i < Row.size(); i++)
+	{
+		if (is_in_Res(Row[i]))
+		{
+			if (building_string == "abbba")
+			{
+				cout << "db\n";
+				//for (auto &l : Row ) cout << l << endl;
+			}
+
+			building_string += Res[Row[i]];
+			cout << building_string << endl;	
+		
+			if (building_string == "abbba")
+			{
+				for (auto &l : Row ) cout << l << endl;
+			}
+
+			if (building_string.length() == 6)
+			{
+				cout << "y\n";
+				auto it = find(Test.begin(), Test.end(), building_string); 
+				if (it != Test.end()) ans++;
+				return;
+			}
+		}
+		else
+		{
+			VVI newRow = Map[Row[i]];
+
+			str B = building_string;
+			dfs(building_string, newRow[0], 0);
+			building_string = B;
+			dfs(building_string, newRow[1], 0);
+		}
+	}
+}
+
+bool is_in_Res(int &n)
+{
+	return(Res[n] >= "a" && Res[n] <= "b");
 }
 
 bool number(char c)
