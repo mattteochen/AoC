@@ -38,7 +38,7 @@ typedef pair<ii,ss>     p_ii_ss;
 
 
 /* Define the parsing object namespace */
-namespace input_parsing
+namespace N_input_parsing
 {
     /* return struct for std map query */
     typedef struct 
@@ -84,6 +84,7 @@ namespace input_parsing
     public:
         Input_obj() {}
         Input_obj(ii &ID): int_ID(ID) {}
+        Input_obj(ss &ID): string_ID(ID) {}
         Input_obj(ii &int_ID, ss &string_ID, v_ii &int_list, v_ss &string_list);
         ii                  getIntId();
         ss                  getStringID();
@@ -97,14 +98,25 @@ namespace input_parsing
         match_v_ii_ret      getStringViiMatch(ss &key);
         match_v_ss_ret      getIntVssMatch(ii &key);
         match_v_ss_ret      getStringVssMatch(ss &key);
-        /*TODO add single addings*/
+
         void                SetID(ii &ID);
+        void                SetID(ss &ID);
+        void                SetVec(v_ii &vec);
+        void                SetVec(v_ss &vec);
+        void                SetMatch(ii &key, ii &value);
+        void                SetMatch(ii &key, ss &value);
+        void                SetMatch(ss &key, ii &value);
+        void                SetMatch(ss &key, ss &value);
+        void                SetMatch(ii &key, v_ii &vec);
+        void                SetMatch(ii &key, v_ss &vec);
+        void                SetMatch(ss &key, v_ii &vec);
+        void                SetMatch(ss &key, v_ss &vec);
     };
 
     class Parse_Base
     {
     public:
-        void parse() {}
+        virtual void parse() {}
     };
 }
 

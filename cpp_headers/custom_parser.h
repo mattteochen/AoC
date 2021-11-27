@@ -1,13 +1,13 @@
 #include "mc.h"
 
-namespace custom_parser
+namespace N_custom_parsing
 {
     /* define the custom parse class */
-    class Parse : public input_parsing::Parse_Base
+    class Parse : public N_input_parsing::Parse_Base
     {
     public:
         /* This is a parse example */
-        void parse(ss &line, vector<input_parsing::Input_obj> &my_input);
+        void parse(ss &line, vector<N_input_parsing::Input_obj> &my_input);
     };
     
     /* parsing helper functions */

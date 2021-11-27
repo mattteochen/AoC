@@ -17,10 +17,10 @@ void solve()
     ifstream input_file("text.txt");
     
     /* declare the parsing object list, the library is intended to declare an obj for every line or one obj for all the input (i.e. number list) */
-    vector<input_parsing::Input_obj> my_input;
+    vector<N_input_parsing::Input_obj> my_input;
 
     /* declare the custom parser object */
-    custom_parser::Parse myParser; 
+    N_custom_parsing::Parse myParser; 
 
     while(getline(input_file, line))
     {
