@@ -77,11 +77,12 @@ namespace N_input_parsing
         m_ss_ss             match_string_string;
         m_ss_ii             match_string_int;
         m_ii_ss             match_int_string;
+    public:
         map<ii, v_ii>       match_int_v_ii;
         map<ss,v_ii>        match_string_v_ii; 
         map<ii, v_ss>       match_int_v_ss;
         map<ss,v_ss>        match_string_v_ss;
-    public:
+
         Input_obj() {}
         Input_obj(ii &ID): int_ID(ID) {}
         Input_obj(ss &ID): string_ID(ID) {}
