@@ -20,13 +20,20 @@ M_VVI Map;
 M_IS Res;
 vector<str> Test;
 int ans = 0;
+VVI Zero;
+str building_string;
+VVI recursion_map;
+vector<int> rules_pos = {0, 1};
+int counter = 0;
 
 void solve();
 void get_num(str &line, int *index, str &tmp);
 void parse(str &line);
 bool number(char c);
-void dfs(str &building_string, vector<int> &Row, int index);
 bool is_in_Res(int &n);
+void fill_recursion_map(int size, vector<int> &recursion_map_vector, int index);
+void fill_recursion_map();
+void dfs(VVI &Row, int index, int Row_index);
 
 int main()
 {
@@ -65,10 +72,36 @@ int main()
 	return 0;
 }
 
+void fill_recursion_map()
+{
+	auto it = Map.end();
+	it--;
+	int size = it->first;
+	cout << "SIZE: " << size << endl;
+
+	vector<int> recursion_map_vector;
+	fill_recursion_map(size, recursion_map_vector, 0);
+}
+
+void fill_recursion_map(int size, vector<int> &recursion_map_vector, int index)
+{
+	if (index == size)
+	{
+		recursion_map.push_back(recursion_map_vector);
+		return;
+	}
+
+	for (int i = 0; i < rules_pos.size(); i++)
+	{
+		recursion_map_vector.push_back(rules_pos[i]);
+		fill_recursion_map(size, recursion_map_vector, index+1);
+		recursion_map_vector.pop_back();
+	}
+}
+
 void solve()
 {
-	VVI Zero = Map[0];
-	str building_string = "";
+	Zero = Map[0];
 
 #ifdef DEBUG
 	cout << "Zero row values: \n";
@@ -77,37 +110,39 @@ void solve()
 		for (auto &n : vector) cout << n << endl;
 	}
 #endif
-	dfs(building_string, Zero[0], 0);
+
+	fill_recursion_map();
+#ifdef DEBUG
+	for (auto &v : recursion_map)
+	{
+		for (auto &n : v) cout << n << " ";
+		cout << endl;
+	}
+#endif
+	/* work */
+	dfs(Zero, 0, 0);
 }
 
-void dfs(str &building_string, vector<int> &Row, int index)
+void dfs(VVI &Row, int index, int Row_index)
 {
-	for (int i = 0; i < Row.size(); i++)
+	if (index == Row[Row_index].size())
 	{
-		if (is_in_Res(Row[i]))
+		//check solution
+		cout << building_string << endl;
+		return;
+	}
+
+	for (int i = Row_index; i < Row.size(); i++)
+	{	
+		if (is_in_Res(Row[i][index])) 
 		{
-			building_string += Res[Row[i]];
-			cout << building_string << endl;	
-		
-			if (building_string.length() == 6)
-			{
-				cout << "y\n";
-				auto it = find(Test.begin(), Test.end(), building_string); 
-				if (it != Test.end()) ans++;
-				return;
-			}
+			building_string += Row[i][index];
+			dfs(Row, index+1, i);
 		}
 		else
 		{
-			VVI newRow = Map[Row[i]];
-
-			str B = building_string;
-			dfs(building_string, newRow[0], 0);
-			if (newRow.size() > 1)
-			{
-				building_string = B;
-				dfs(building_string, newRow[1], 0);
-			}
+			VVI newRow = Map[Row[i][index]];
+			dfs(newRow, 0, 0);
 		}
 	}
 }
