@@ -17,11 +17,14 @@ bool custom_parser::is_lowercase_letter(char &c)
 
 void custom_parser::Parse::parse(ss &line, vector<input_parsing::Input_obj> &my_input)
 {
+    input_parsing::Input_obj *parsing_obj = new input_parsing::Input_obj();
     ii num = stoi(line, nullptr, 0);
-    input_parsing::Input_obj newInputObject(num);
-    //newInputObject.input_parsing::Input_obj::SetID(num);
+    
+    parsing_obj -> input_parsing::Input_obj::SetID(num);
 
-    my_input.push_back(newInputObject);
+    my_input.push_back(*parsing_obj);
+
+    free(parsing_obj);
 }
 
 
