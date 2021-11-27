@@ -1,6 +1,5 @@
 #include "custom_parser.h"
 
-
 void solve();
 
 int main()
