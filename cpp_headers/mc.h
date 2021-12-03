@@ -4,6 +4,7 @@
  
 /* Exported includes ---------------------------------------------------------------------------- */
 #include <vector>
+#include <math.h>
 #include <iostream>
 #include <fstream>
 #include <map>

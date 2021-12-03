@@ -24,7 +24,7 @@ void N_custom_parsing::Parse_standard::parse(ss &line, vector<N_input_parsing::I
 
     my_input.push_back(*parsing_obj);
 
-    free(parsing_obj);
+   free(parsing_obj);
 }
 
 void N_custom_parsing::Parse_day16_2020::get_name(ss &line, char &sep, ss &destination)
