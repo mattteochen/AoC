@@ -150,6 +150,11 @@ N_input_parsing::match_v_ss_ret N_input_parsing::Input_obj::getIntVssMatch(ii &k
     return ret; 
 }
 
+vector<v_ii> N_input_parsing::Input_obj::getIntIntList()
+{
+    return this -> int_list_list;
+}
+
 void N_input_parsing::Input_obj::SetID(ii &ID)
 {
     this -> int_ID = ID;
@@ -168,6 +173,11 @@ void N_input_parsing::Input_obj::SetVec(v_ii &vec)
 void N_input_parsing::Input_obj::SetVec(v_ss &vec)
 {
     this -> string_list = vec;
+}
+
+void N_input_parsing::Input_obj::SetVecVec(vector<v_ii> &vec)
+{
+    this -> int_list_list = vec;
 }
 
 void N_input_parsing::Input_obj::SetMatch(ii &key, ii &value)
