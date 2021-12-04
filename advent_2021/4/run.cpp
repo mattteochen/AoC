@@ -83,15 +83,20 @@ void sign_number(vector<N_input_parsing::Input_obj> &my_input, int &num, m_ii_ii
         }
         vector<v_ii> tmp_matrix = my_input[i].getIntIntList();
         ii marked = 0;
+        ii stop = 0;
+
         for (auto &line : tmp_matrix)
         {
+            if (stop) break;
             for (auto &n : line) 
             {
                 if (n == num)
                 {
+                    stop = 1;
                     marked = 1;
                     n = -1;
                 }
+                if (stop) break;
             }
         }
 
@@ -108,15 +113,19 @@ void sign_number(vector<N_input_parsing::Input_obj> &my_input, int &num)
     {
         vector<v_ii> tmp_matrix = my_input[i].getIntIntList();
         ii marked = 0;
+        ii stop = 0;
         for (auto &line : tmp_matrix)
         {
+            if (stop) break;
             for (auto &n : line) 
             {
                 if (n == num)
                 {
+                    stop = 1;
                     marked = 1;
                     n = -1;
                 }
+                if (stop) break;
             }
         }
         if (marked)
