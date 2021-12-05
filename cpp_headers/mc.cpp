@@ -219,3 +219,13 @@ void N_input_parsing::Input_obj::SetMatch(ss &key, v_ii &vec)
 {
     this -> match_string_v_ii[key] = vec;
 }
+
+void N_input_parsing::Input_obj::SetPairIntList(vector<pair<ii,ii>> &vec)
+{
+    this -> pair_int_list = vec;
+}
+
+vector<pair<ii,ii>> N_input_parsing::Input_obj::getPairIntList()
+{
+    return this -> pair_int_list;
+}
