@@ -76,6 +76,7 @@ namespace N_input_parsing
         vector<pair<ii,ii>> pair_int_list;
         v_ss                string_list;
         vector<v_ii>        int_list_list;
+        vector<v_ss>        string_string_list;
         m_ii_ii             match_int_int;
         m_ss_ss             match_string_string;
         m_ss_ii             match_string_int;
@@ -95,6 +96,7 @@ namespace N_input_parsing
         v_ii                getIntList();
         v_ss                getStringList();
         vector<v_ii>        getIntIntList();
+        vector<v_ss>        getStringStringList();
         match_int_ret       getIntIntMatch(ii &key);
         match_string_ret    getStringStringMatch(ss &key);
         match_int_ret       getStringIntMatch(ss &key);
@@ -118,6 +120,7 @@ namespace N_input_parsing
         void                SetMatch(ss &key, v_ii &vec);
         void                SetMatch(ss &key, v_ss &vec);
         void                SetVecVec(vector<v_ii> &vec);
+        void                SetVecVec(vector<v_ss> &vec);
     };
 
     class Parse_Base

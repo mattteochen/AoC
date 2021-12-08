@@ -229,3 +229,13 @@ vector<pair<ii,ii>> N_input_parsing::Input_obj::getPairIntList()
 {
     return this -> pair_int_list;
 }
+
+vector<v_ss> N_input_parsing::Input_obj::getStringStringList()
+{
+    return this -> string_string_list;
+}
+
+void N_input_parsing::Input_obj::SetVecVec(vector<v_ss> &vec)
+{
+    this -> string_string_list = vec;
+}
