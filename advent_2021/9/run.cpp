@@ -16,7 +16,6 @@ bool helper(vector<v_ii> &m, size_t &row, size_t &col, map<pair<ii,ii>, ii> &c);
 void part_1(vector<N_input_parsing::Input_obj> &my_input);
 void part_2(vector<N_input_parsing::Input_obj> &my_input);
 
-vector<v_ii> b;
 vector<pair<ii,ii>> roots;  
 
 int main()
