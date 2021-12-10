@@ -12,12 +12,15 @@ void solve();
 void part_1(vector<N_input_parsing::Input_obj> &my_input);
 void part_2(vector<N_input_parsing::Input_obj> &my_input);
 bool is_valid(const ss &s, ii &points);
+bool is_valid(const ss &s, vector<char> &remaining);
 int get_point(const char &c);
+ll get_sum(vector<char> &remaining);
 bool does_it_close(const char &open, const char &close);
 bool is_open(const char &c);
 bool is_close(const char &c);
 
 map<char,ii> brackets_points;
+map<char,ii> brackets_points_2;
 
 int main()
 {
@@ -49,22 +52,29 @@ void solve()
     brackets_points[']'] = 57;
     brackets_points['}'] = 1197;
     brackets_points['>'] = 25137;
+    brackets_points_2[')'] = 1;
+    brackets_points_2[']'] = 2;
+    brackets_points_2['}'] = 3;
+    brackets_points_2['>'] = 4;
 
     part_1(my_input);
-    //part_2(my_input);
+    part_2(my_input);
 }
 
 void part_2(vector<N_input_parsing::Input_obj> &my_input)
 {
-    ii sum = 0;
+    vector<long> sums;
+
     for (auto &ob : my_input)
     {
-        ii points = 0;
-        if (!is_valid(ob.getStringID(), points))
+        vector<char> remaining;
+        if (!is_valid(ob.getStringID(), remaining))
         {
-            sum += points;
+            sums.push_back(get_sum(remaining));
         }
     }
+    sort(sums.begin(), sums.end());
+    cout << "part 2:" << sums[sums.size() / 2] << endl;
 }
 
 void part_1(vector<N_input_parsing::Input_obj> &my_input)
@@ -81,6 +91,29 @@ void part_1(vector<N_input_parsing::Input_obj> &my_input)
 
     cout << "part 1: " << sum << endl;
 }
+
+ll get_sum(vector<char> &remaining)
+{
+    ll sum = 0;
+
+    auto ret_close_par = [](const char &c) -> char
+    {
+        if (c == '(') return ')';
+        else if (c == '[') return ']';
+        else if (c == '{') return '}';
+        return '>';
+    };
+
+    for (ii i = remaining.size() - 1; i >= 0; i--)
+    {
+        char c = ret_close_par(remaining[i]);
+        sum *= 5;
+        sum += brackets_points_2[c];
+    }
+
+    return sum;
+}
+
 
 bool is_open(const char &c)
 {
@@ -106,7 +139,7 @@ int get_point(const char &c)
     return brackets_points[c];
 }
 
-bool is_valid(const ss &s, ii &points, vector<char> &remaining)
+bool is_valid(const ss &s, vector<char> &remaining)
 {
     size_t i = 0; 
     vector<char> open_b;
@@ -124,14 +157,12 @@ bool is_valid(const ss &s, ii &points, vector<char> &remaining)
         }
         else if (is_close(s[i]))
         {
-            open_b.pop_back();
-            points += get_point(s[i]);
             return 1;
         }
         
         i++;
     }
-    if (rem)
+    if (open_b.size()) remaining = open_b;
     return open_b.size() == 0 ? 1 : 0;
 }
 
