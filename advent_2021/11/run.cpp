@@ -1,12 +1,13 @@
 #include "custom_parser.h"
+#include <cstddef>
 
 void solve();
 void part_1(vector<N_input_parsing::Input_obj> my_input);
 void part_2(vector<N_input_parsing::Input_obj> &my_input);
 
 void increase_energy(vector<N_input_parsing::Input_obj> &my_input);
-void increase_adj_energy(vector<v_ii> &matrix, size_t i, size_t j, map<pair<size_t,size_t>,ii> &vis);
-void do_flash(vector<N_input_parsing::Input_obj> &my_input, map<pair<size_t,size_t>,ii> &vis, vector<v_ii> &forward_matrix, ii &ans);
+void increase_adj_energy(vector<v_ii> &matrix, size_t i, size_t j, vector<v_ii> &vis, vector<pair<size_t,size_t>> &flash_points);
+void do_flash(vector<N_input_parsing::Input_obj> &my_input, vector<v_ii> &vis, vector<v_ii> &forward_matrix, ii &ans);
 
 auto copy_matrix = [](vector<v_ii> &dest, vector<N_input_parsing::Input_obj> &my_input)
 {
@@ -83,16 +84,10 @@ void part_2(vector<N_input_parsing::Input_obj> &my_input)
 
     while(1)
     {
-        //cout << "before: \n";
-        //print(my_input);
-
-        map<pair<size_t,size_t>, ii> vis;
+        vector<v_ii> vis(my_input.size(), v_ii(my_input[0].getIntList().size(), 0));
         increase_energy(my_input);
         copy_matrix(forward_matrix, my_input);
         do_flash(my_input, vis, forward_matrix, ans);
-        
-        //cout << "after:\n";
-        //print(my_input);
         
         if (done()) break;
         steps ++;
@@ -106,27 +101,27 @@ void part_1(vector<N_input_parsing::Input_obj> my_input)
     ii ans = 0;
     ii steps = 100;
     vector<v_ii> forward_matrix(my_input.size(), v_ii(my_input[0].getIntList().size(), 0));
-
+    
     for (ii i = 0; i < steps; i++)
     {
         //cout << "before: \n";
         //print(my_input);
 
-        map<pair<size_t,size_t>, ii> vis;
+        vector<v_ii> vis(my_input.size(), v_ii(my_input[0].getIntList().size(), 0));
         increase_energy(my_input);
         copy_matrix(forward_matrix, my_input);
         do_flash(my_input, vis, forward_matrix, ans);
         
         //cout << "after:\n";
         //print(my_input);
-
     }
 
     cout << "part 1: " << ans << endl;
 }
 
-void do_flash(vector<N_input_parsing::Input_obj> &my_input, map<pair<size_t,size_t>,ii> &vis, vector<v_ii> &forward_matrix, ii &ans)
+void do_flash(vector<N_input_parsing::Input_obj> &my_input, vector<v_ii> &vis, vector<v_ii> &forward_matrix, ii &ans)
 {
+    vector<pair<size_t,size_t>> flash_points;
     auto copy_matrix = [&]()
     {
         for (size_t i = 0; i < my_input.size(); i++)
@@ -135,31 +130,41 @@ void do_flash(vector<N_input_parsing::Input_obj> &my_input, map<pair<size_t,size
         }
     };
 
+   /* get initial flash points */ 
+    for (size_t i = 0; i < my_input.size(); i++)
+    {
+        v_ii& this_line = my_input[i].getIntListRef();
+        for (size_t j = 0; j < this_line.size(); j++)
+        {
+            if (this_line[j] > 9)
+            {
+                flash_points.push_back({i,j});
+            }
+        }
+    }
+
     while(1)
     {
         ii changed = 0;
-        for (size_t i = 0; i < my_input.size(); i++)
+        ii size = flash_points.size();
+        vector<pair<size_t,size_t>> new_flash_points;
+        for (ii i = 0; i < size; i++)
         {
-            v_ii& this_line = my_input[i].getIntListRef();
-            for (size_t j = 0; j < this_line.size(); j++)
-            {
-                if (this_line[j] > 9)
-                {
-                    ans++;
-                    changed = 1;
-                    increase_adj_energy(forward_matrix, i, j, vis);
-                    /* this position has flashed */
-                    vis[{i,j}] = 1;
-                    forward_matrix[i][j] = 0;
-                }
-            }
+            if (vis[flash_points[i].first][flash_points[i].second] == 1) continue;
+            ans ++;
+            changed = 1;
+            increase_adj_energy(forward_matrix, flash_points[i].first, flash_points[i].second, vis, new_flash_points);
+            /* this position has flashed */
+            vis[flash_points[i].first][flash_points[i].second] = 1;
+            forward_matrix[flash_points[i].first][flash_points[i].second] = 0;
         }
+        flash_points = new_flash_points;
         if (!changed) break;
-        copy_matrix();
     }
+    copy_matrix();
 }
 
-void increase_adj_energy(vector<v_ii> &matrix, size_t i, size_t j, map<pair<size_t, size_t>,ii> &vis)
+void increase_adj_energy(vector<v_ii> &matrix, size_t i, size_t j, vector<v_ii> &vis, vector<pair<size_t,size_t>> &flash_points)
 {
     vector<pair<size_t,size_t>> positions{{1,0},{-1,0},{0,1},{0,-1},{-1,-1},{-1,1},{1,-1},{1,1}};
     
@@ -173,9 +178,12 @@ void increase_adj_energy(vector<v_ii> &matrix, size_t i, size_t j, map<pair<size
         size_t new_i = i + p.first;
         size_t new_j = j + p.second;
 
-        if (inside(new_i, new_j, matrix.size(), matrix[0].size()) && vis[{new_i, new_j}] != 1)
+        if (inside(new_i, new_j, matrix.size(), matrix[0].size()) && vis[new_i][new_j] != 1)
         {
             matrix[new_i][new_j]++;
+
+            /* add new point */
+            if (matrix[new_i][new_j] > 9) flash_points.push_back({new_i,new_j});
         }
     }
 }
