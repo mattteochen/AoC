@@ -1,9 +1,4 @@
 #include "custom_parser.h"
-#include <algorithm>
-#include <cstdint>
-#include <cstring>
-#include <unordered_map>
-#include <chrono>
 
 void solve();
 void part_1(vector<N_input_parsing::Input_obj> &my_input);
@@ -11,7 +6,11 @@ void part_2(vector<N_input_parsing::Input_obj> &my_input);
 
 int main()
 {
+    auto t1 = chrono::high_resolution_clock::now();
     solve();
+    auto t2 = chrono::high_resolution_clock::now();
+    auto delta = chrono::duration_cast<chrono::milliseconds>(t2 - t1);
+    cout << "Time: " << delta.count() << " ms\n";
     return 1;
 }
 

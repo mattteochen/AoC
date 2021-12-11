@@ -1,12 +1,4 @@
 #include "custom_parser.h"
-#include <algorithm>
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <unordered_map>
-#include <chrono>
-#include <vector>
-#include <chrono>
 
 void solve();
 void sign_point(size_t &row, size_t &col, map<pair<ii,ii>, int> &cant_be_ans, vector<v_ii> &m);
@@ -20,7 +12,11 @@ vector<pair<ii,ii>> roots;
 
 int main()
 {
+    auto t1 = chrono::high_resolution_clock::now();
     solve();
+    auto t2 = chrono::high_resolution_clock::now();
+    auto delta = chrono::duration_cast<chrono::milliseconds>(t2 - t1);
+    cout << "Time: " << delta.count() << " ms\n";
     return 1;
 }
 
@@ -83,7 +79,6 @@ void part_2(vector<N_input_parsing::Input_obj> &my_input)
         ii size = 1;
         dfs(matrix, p, values, vis, size);
         values.push_back(size);
-        cout << size << endl;
     }
 
     sort(values.begin(), values.end(), [](int &a, int &b) -> bool {return a < b;});
