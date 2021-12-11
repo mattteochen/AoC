@@ -95,6 +95,8 @@ namespace N_input_parsing
         ss                  getStringID();
         v_ii                getIntList();
         v_ss                getStringList();
+        v_ii&               getIntListRef();
+        v_ss&               getStringListRef();
         vector<v_ii>        getIntIntList();
         vector<v_ss>        getStringStringList();
         match_int_ret       getIntIntMatch(ii &key);

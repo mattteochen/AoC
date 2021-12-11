@@ -239,3 +239,13 @@ void N_input_parsing::Input_obj::SetVecVec(vector<v_ss> &vec)
 {
     this -> string_string_list = vec;
 }
+
+v_ii & N_input_parsing::Input_obj::getIntListRef()
+{
+    return this -> int_list;
+}
+
+v_ss & N_input_parsing::Input_obj::getStringListRef()
+{
+    return this -> string_list;
+}
