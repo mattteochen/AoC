@@ -16,6 +16,23 @@ void increase_energy(vector<N_input_parsing::Input_obj> &my_input);
 void increase_adj_energy(vector<v_ii> &matrix, size_t i, size_t j, map<pair<size_t,size_t>,ii> &vis);
 void do_flash(vector<N_input_parsing::Input_obj> &my_input, map<pair<size_t,size_t>,ii> &vis, vector<v_ii> &forward_matrix, ii &ans);
 
+auto copy_matrix = [](vector<v_ii> &dest, vector<N_input_parsing::Input_obj> &my_input)
+{
+    for (size_t i = 0; i < my_input.size(); i++)
+    {
+        for (size_t j = 0; j < my_input.size(); j++) dest[j] = my_input[j].getIntList();
+    }
+};
+
+auto print = [](vector<N_input_parsing::Input_obj> &my_input)
+{
+    for (auto &ob : my_input)
+    {
+        for (auto &n : ob.getIntList()) cout << n << " ";
+        cout << endl;
+    }
+    cout << endl << endl;
+};
 
 int main()
 {
@@ -55,16 +72,6 @@ void part_2(vector<N_input_parsing::Input_obj> &my_input)
     ll steps = 1;
     vector<v_ii> forward_matrix(my_input.size(), v_ii(my_input[0].getIntList().size(), 0));
 
-    auto print = [&]()
-    {
-        for (auto &ob : my_input)
-        {
-            for (auto &n : ob.getIntList()) cout << n << " ";
-            cout << endl;
-        }
-        cout << endl << endl;
-    };
-
     auto done = [&]() -> bool
     {
         ii c = 0;
@@ -81,15 +88,15 @@ void part_2(vector<N_input_parsing::Input_obj> &my_input)
     while(1)
     {
         //cout << "before: \n";
-        //print();
+        //print(my_input);
 
         map<pair<size_t,size_t>, ii> vis;
         increase_energy(my_input);
-        for (size_t j = 0; j < my_input.size(); j++) forward_matrix[j] = my_input[j].getIntList();
+        copy_matrix(forward_matrix, my_input);
         do_flash(my_input, vis, forward_matrix, ans);
         
         //cout << "after:\n";
-        //print();
+        //print(my_input);
         
         if (done()) break;
         steps ++;
@@ -104,28 +111,18 @@ void part_1(vector<N_input_parsing::Input_obj> my_input)
     ii steps = 100;
     vector<v_ii> forward_matrix(my_input.size(), v_ii(my_input[0].getIntList().size(), 0));
 
-    auto print = [&]()
-    {
-        for (auto &ob : my_input)
-        {
-            for (auto &n : ob.getIntList()) cout << n << " ";
-            cout << endl;
-        }
-        cout << endl << endl;
-    };
-
     for (ii i = 0; i < steps; i++)
     {
         //cout << "before: \n";
-        //print();
+        //print(my_input);
 
         map<pair<size_t,size_t>, ii> vis;
         increase_energy(my_input);
-        for (size_t j = 0; j < my_input.size(); j++) forward_matrix[j] = my_input[j].getIntList();
+        copy_matrix(forward_matrix, my_input);
         do_flash(my_input, vis, forward_matrix, ans);
         
         //cout << "after:\n";
-        //print();
+        //print(my_input);
 
     }
 
