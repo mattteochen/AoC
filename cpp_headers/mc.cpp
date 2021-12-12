@@ -249,3 +249,13 @@ v_ss & N_input_parsing::Input_obj::getStringListRef()
 {
     return this -> string_list;
 }
+
+m_ss_ss& N_input_parsing::Input_obj::getStringStringMapRef()
+{
+    return this -> match_string_string;
+}
+
+m_ii_ii& N_input_parsing::Input_obj::getIntIntMapRef()
+{
+    return this -> match_int_int;
+}

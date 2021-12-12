@@ -104,6 +104,8 @@ namespace N_input_parsing
         v_ss                getStringList();
         v_ii&               getIntListRef();
         v_ss&               getStringListRef();
+        m_ss_ss&            getStringStringMapRef();
+        m_ii_ii&            getIntIntMapRef();
         vector<v_ii>        getIntIntList();
         vector<v_ss>        getStringStringList();
         match_int_ret       getIntIntMatch(ii &key);
