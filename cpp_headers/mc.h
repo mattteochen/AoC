@@ -79,6 +79,7 @@ namespace N_input_parsing
     private:
         ss                  string_ID;
         ii                  int_ID;
+        pair<ii,ii>         pair_int;
         v_ii                int_list;
         vector<pair<ii,ii>> pair_int_list;
         v_ss                string_list;
@@ -106,6 +107,7 @@ namespace N_input_parsing
         v_ss&               getStringListRef();
         m_ss_ss&            getStringStringMapRef();
         m_ii_ii&            getIntIntMapRef();
+        m_ss_ii&            getStringIntMapRef();
         vector<v_ii>        getIntIntList();
         vector<v_ss>        getStringStringList();
         match_int_ret       getIntIntMatch(ii &key);
@@ -117,6 +119,8 @@ namespace N_input_parsing
         match_v_ss_ret      getIntVssMatch(ii &key);
         match_v_ss_ret      getStringVssMatch(ss &key);
         vector<pair<ii,ii>> getPairIntList();
+        pair<ii,ii>&        getIntPairRef();
+        void                SetPairInt(pair<ii,ii> &p);
         void                SetPairIntList(vector<pair<ii,ii>> &vec);
         void                SetID(ii &ID);
         void                SetID(ss &ID);

@@ -259,3 +259,19 @@ m_ii_ii& N_input_parsing::Input_obj::getIntIntMapRef()
 {
     return this -> match_int_int;
 }
+
+void N_input_parsing::Input_obj::SetPairInt(pair<ii, ii> &p)
+{
+    this -> pair_int = p;
+}
+
+pair<ii,ii>& N_input_parsing::Input_obj::getIntPairRef()
+{
+    return this -> pair_int;
+}
+
+m_ss_ii& N_input_parsing::Input_obj::getStringIntMapRef()
+{
+    return this -> match_string_int;
+}
+
