@@ -1,5 +1,7 @@
 #include "custom_parser.h"
+#include <climits>
 #include <cstddef>
+#include <assert.h>
 
 void solve();
 void part_1(vector<N_input_parsing::Input_obj> &input_1, vector<N_input_parsing::Input_obj> &input_2);
@@ -53,14 +55,24 @@ void solve()
     //}
     
     part_1(my_input, my_input_2);
-    //part_2(my_input, my_input_2);
+    part_2(my_input, my_input_2);
 }
 
-void part_1(vector<N_input_parsing::Input_obj> &input_one, vector<N_input_parsing::Input_obj> &input_two)
+void part_2(vector<N_input_parsing::Input_obj> &input_one, vector<N_input_parsing::Input_obj> &input_two)
 {
     size_t i = 0;
-    map<ss,ss> formulas;
+    map<ss,char> formulas;
+    map<char,map<char,long long>> links;
     ss recipe = input_one[0].getStringID();
+    vector<long long> counter(26, 0);
+
+    /* initialize the counter */
+    {
+        for (ii i = 0; i < recipe.size(); i++)
+        {
+            counter[recipe[i] - 'A'] ++;
+        }
+    }
 
     auto create_formulas_map = [&]() -> void
     {
@@ -68,63 +80,183 @@ void part_1(vector<N_input_parsing::Input_obj> &input_one, vector<N_input_parsin
         {
             for (auto &m : ob.getStringStringMapRef())
             {
-                formulas[m.first] = m.second;
+                assert(m.second.size() == 1);
+                char character = m.second[0];
+                formulas[m.first] = character;
             }
         }
     };
 
-    auto match_pos = [](map<size_t,size_t> &pos, ss line)
+    auto create_liks = [&]() -> void
     {
-        for (size_t i = 0; i < line.length(); i++)
-            pos[i] = i;
+        for (size_t i = 0; i < recipe.size() - 1; i++)
+        {
+            links[recipe[i]][recipe[i + 1]] ++;
+        }
     };
 
-    auto update_pos_matching = [](map<size_t,size_t> &pos, const size_t len, const size_t trigger)
+    auto add_to_link = [&](char key_one, char key_two, long long size) -> void
     {
-        for (auto &m : pos)
+        links[key_one][key_two] += size;
+    };
+
+    auto display_links = [&]() -> void
+    {
+        for (auto &link : links)
         {
-            if (m.first > trigger) m.second += len;
+            cout << link.first << "--------\n";
+            for (auto &m : link.second)
+            {
+                cout << m.first << ": " << m.second << endl;
+            }
+        }
+    };
+
+    auto update_links = [&]() -> void
+    {
+        map<char,map<char,long long>> forward_links = links;
+        for (auto &link : forward_links)
+        {
+            for (auto &m : link.second)
+            {
+                long long old_quantity = m.second;
+                ss tmp = "";
+                tmp += link.first;
+                tmp += m.first;
+                
+                /* detach link */
+                links[link.first][m.first] -= old_quantity;
+                //link.second[m.first] = 0;
+                /* add new links */
+                links[link.first][formulas[tmp]] += old_quantity;
+                //link.second[formulas[tmp]] = old_quantity;
+                /* update the new with the old link */
+                add_to_link(formulas[tmp], m.first, old_quantity);
+
+                /* increment the counter */
+                counter[formulas[tmp] - 'A'] += old_quantity;
+            }
         }
     };
 
     create_formulas_map();
+    create_liks();
 
-    for (size_t cycles = 0; cycles < 10; cycles++)
-    { 
-        size_t len = recipe.length();
-        ss forward_recipe = recipe;
+    for (ii i = 0 ; i < 40; i++)
+    {
+        update_links();
+    }
 
-        map<size_t,size_t> pos_matching;
-        match_pos(pos_matching, recipe);
-        for (i = 0; i < recipe.length() - 1; i++)
+    long long val_max = 0, val_min = LONG_LONG_MAX;
+
+    for (auto &n : counter)
+    {
+        val_max = max(val_max, n);
+        if (n)
+            val_min = min(val_min, n);
+    }
+
+    cout << "part 2: " << abs(val_max - val_min) << endl;
+}
+
+void part_1(vector<N_input_parsing::Input_obj> &input_one, vector<N_input_parsing::Input_obj> &input_two)
+{
+    size_t i = 0;
+    map<ss,char> formulas;
+    map<char,map<char,ii>> links;
+    ss recipe = input_one[0].getStringID();
+    vector<ii> counter(26, 0);
+
+    /* initialize the counter */
+    {
+        for (ii i = 0; i < recipe.size(); i++)
         {
-            ss tmp = recipe.substr(i, 2);
-            
-            auto it = formulas.find(tmp);
-            if (it != formulas.end())
+            counter[recipe[i] - 'A'] ++;
+        }
+    }
+
+    auto create_formulas_map = [&]() -> void
+    {
+        for (auto &ob : input_two)
+        {
+            for (auto &m : ob.getStringStringMapRef())
             {
-                forward_recipe.insert(pos_matching[i] + 1, formulas[tmp]);
-                update_pos_matching(pos_matching, 1, i);
+                assert(m.second.size() == 1);
+                char character = m.second[0];
+                formulas[m.first] = character;
             }
         }
-        recipe = forward_recipe;
-        cout << recipe << endl;
-    }
+    };
 
-    map<char,ii> counter;
-
-    for (auto &c : recipe) counter[c]++;
-    
-    vector<pair<char,ii>> counter_vec;
-
-    for (auto &m : counter)
+    auto create_liks = [&]() -> void
     {
-        counter_vec.push_back({m.first, m.second});
+        for (size_t i = 0; i < recipe.size() - 1; i++)
+        {
+            links[recipe[i]][recipe[i + 1]] ++;
+        }
+    };
+
+    auto add_to_link = [&](char key_one, char key_two, ii size) -> void
+    {
+        links[key_one][key_two] += size;
+    };
+
+    auto display_links = [&]() -> void
+    {
+        for (auto &link : links)
+        {
+            cout << link.first << "--------\n";
+            for (auto &m : link.second)
+            {
+                cout << m.first << ": " << m.second << endl;
+            }
+        }
+    };
+
+    auto update_links = [&]() -> void
+    {
+        map<char,map<char,ii>> forward_links = links;
+        for (auto &link : forward_links)
+        {
+            for (auto &m : link.second)
+            {
+                ii old_quantity = m.second;
+                ss tmp = "";
+                tmp += link.first;
+                tmp += m.first;
+                
+                /* detach link */
+                links[link.first][m.first] -= old_quantity;
+                //link.second[m.first] = 0;
+                /* add new links */
+                links[link.first][formulas[tmp]] += old_quantity;
+                //link.second[formulas[tmp]] = old_quantity;
+                /* update the new with the old link */
+                add_to_link(formulas[tmp], m.first, old_quantity);
+
+                /* increment the counter */
+                counter[formulas[tmp] - 'A'] += old_quantity;
+            }
+        }
+    };
+
+    create_formulas_map();
+    create_liks();
+
+    for (ii i = 0 ; i < 10; i++)
+    {
+        update_links();
     }
 
-    sort(counter_vec.begin(), counter_vec.end(), [](const pair<char,ii> &a, const pair<char,ii> &b) {return a.second < b.second;});
+    ii val_max = 0, val_min = INT_MAX;
 
-    auto ans = abs(counter_vec[0].second - counter_vec[counter_vec.size() - 1].second);
-    cout << "part 1: " << ans << endl;
+    for (auto &n : counter)
+    {
+        val_max = max(val_max, n);
+        if (n)
+            val_min = min(val_min, n);
+    }
+
+    cout << "part 1: " << abs(val_max - val_min) << endl;
 }
 
