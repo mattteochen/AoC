@@ -12,9 +12,7 @@ void solve();
 void part_1(vector<N_input_parsing::Input_obj> &input, ss &law);
 
 void create_infinity_matrix(vector<ss> &starting_matrix, vector<ss> &matrix, const char charact);
-void get_active_pos(map<pair<ii,ii>,ii> &m, vector<ss> &matrix);
-void do_work(map<pair<ii,ii>,ii> &active_pos, map<char,ii> &image_mapping, v_ss &matrix, ss &law);
-void sign_position(map<pair<ii,ii>,ii> &active_pos, const pair<ii,ii> pos);
+void do_work(map<char,ii> &image_mapping, v_ss &matrix, ss &law);
 ii get_this_square_value(const pair<ii,ii> pos, v_ss &matrix, map<char,ii> &image_mapping, ii &flip);
 
 int main()
@@ -80,28 +78,6 @@ void create_infinity_matrix(vector<ss> &starting_matrix, vector<ss> &matrix, con
     matrix.push_back(new_line);
 }
 
-void sign_position(map<pair<ii,ii>,ii> &active_pos, const pair<ii,ii> pos)
-{
-    for (ii i = pos.first - 2; i <= pos.first + 2; i++)
-    {
-        for (ii j = pos.second - 2; j <= pos.second + 2; j++)
-        {
-            active_pos[{i,j}] = 1;
-        }
-    }
-}
-
-void get_active_pos(map<pair<ii,ii>,ii> &active_pos, vector<ss> &matrix)
-{
-    for (ii i = 0; i < matrix.size(); i++)
-    {
-        for (ii j = 0; j < matrix[i].size(); j++)
-        {
-            if (matrix[i][j] == '#') sign_position(active_pos, {i,j});
-        }
-    }
-}
-
 ii get_this_square_value(const pair<ii,ii> pos, v_ss &matrix, map<char,ii> &image_mapping, ii &flip)
 {
     ss tmp;
@@ -127,71 +103,9 @@ ii get_this_square_value(const pair<ii,ii> pos, v_ss &matrix, map<char,ii> &imag
     return ans;
 }
 
-void do_work(map<pair<ii,ii>,ii> &active_pos, map<char,ii> &image_mapping, v_ss &matrix, ss &law)
+void do_work(map<char,ii> &image_mapping, v_ss &matrix, ss &law)
 {
     ii flip = 0;
-    auto is_all_null = [&](ss &line)
-    {
-        for (auto &c : line) if (c == '#') return 0;
-        return 1;
-    };
-
-    auto trim_matrix = [&](v_ss &m)
-    {
-        v_ii pos_up;
-        v_ii pos_dow;
-        v_ss new_m;
-        for (size_t i = 0; i < m.size(); i++)
-        {
-            if (is_all_null(m[i]))
-            {
-                pos_up.push_back(i);
-            }
-            else break;
-        }
-        for (size_t i = m.size() - 1; i >= 0; i--)
-        {
-            if (is_all_null(m[i]))
-            {
-                pos_dow.push_back(i);
-            }
-            else break;
-        }
-        for (ii i = pos_up.back() + 1; i < pos_dow.back(); i++)
-        {
-            new_m.push_back(m[i]);
-        }
-        ii max_l = INT32_MAX, max_r = 0;
-        for (size_t i = 0; i < new_m.size(); i++)
-        {
-            if(is_all_null(new_m[i])) continue;
-            ii left, right;
-            for (size_t j = 0; j < new_m[0].size(); j++)
-            {
-                if (new_m[i][j] == '#')
-                {
-                    left = j;
-                    break;
-                }
-            }
-            for (size_t j = new_m[0].size() - 1; j >= 0; j--)
-            {
-                if (new_m[i][j] == '#')
-                {
-                    right = j;
-                    break;
-                }
-            }
-            max_l = min(max_l, left);
-            max_r = max(max_r, right);
-        }
-        for (size_t i = 0; i < new_m.size(); i++)
-        {
-            new_m[i].erase(max_r + 1, new_m[i].size() - max_r - 1);
-            new_m[i].erase(0, max_l);
-        }
-        m = new_m;
-    };
 
     for (uint8_t i = 0; i < 50; i++, flip ++)
     {
@@ -256,8 +170,6 @@ void part_1(vector<N_input_parsing::Input_obj> &input, ss &law)
     image_mapping['.'] = 0;
     image_mapping['#'] = 1;
     
-    map<pair<ii,ii>,ii> active_pos;
-    //get_active_pos(active_pos, matrix);
-    do_work(active_pos, image_mapping, matrix, law);
+    do_work(image_mapping, matrix, law);
 }
 
